@@ -33,7 +33,7 @@ public class Model {
 		Graphs.addAllVertices(grafo, idMap.values());
 		for(CoAutoraggio c: dao.getAutoraggio()) {
 			grafo.addEdge(idMap.get(c.getAutore1()),idMap.get(c.getAutore2()));
-	}
+		}
 	}
 	
 	public List<Author> cercaCoautori(Author a) {
@@ -55,19 +55,45 @@ public class Model {
 	}
 
 	public ArrayList<Paper> getCammino(Author partenza, Author arrivo) {
-		PortoDAO dao= new PortoDAO();
 		DijkstraShortestPath<Author, DefaultEdge> dijkstra = new DijkstraShortestPath<Author, DefaultEdge>(this.grafo);
 		GraphPath<Author, DefaultEdge> path= dijkstra.getPath(partenza,arrivo);
 		if(path==null)
 			return null;
+		this.collegaAutoriArticoli(getAllPaper(), this.idMap);
 		LinkedList<Author> cammino=new LinkedList<Author>(path.getVertexList());
-		//System.out.println(cammino);
-		ArrayList<Paper> articoli=new ArrayList<Paper>();
+		ArrayList<Paper> articolicomuni=new ArrayList<Paper>();
 		for(int i=0;i<cammino.size()-1;i++) {
-			articoli.add(dao.getPaperComune(cammino.get(i), cammino.get(i+1)));
+			articolicomuni.add(this.articoloComune(cammino.get(i),cammino.get(i+1)));
 		}
-		return articoli;
+		return articolicomuni;
 	}
 	
+	private Paper articoloComune(Author author, Author author2) {
+		//System.out.println(author.getPapers());
+		for (Paper p: author.getPapers()) {
+			if(author2.contieneArticolo(p))
+				return p;
+		}
+		return null;
+	}
 
+	private HashMap<Integer, Paper> getAllPaper() {
+		PortoDAO dao= new PortoDAO();
+		HashMap<Integer,Paper> paperMap=new HashMap<Integer, Paper>();
+		for(Paper p:dao.getAllPaper()) {
+			paperMap.put(p.getEprintid(), p);
+		}
+		return paperMap;
+	}
+	
+	private void collegaAutoriArticoli(HashMap<Integer,Paper>paperMap, HashMap<Integer,Author>autorimap) {
+		PortoDAO dao= new PortoDAO();
+		for(Author a: autorimap.values()) {
+			for(Integer id:dao.getAllPaperByAuthor(a)) {
+				Paper p=paperMap.get(id);
+				p.aggiungiAutore(a);
+				a.aggiungiPaper(p);
+			}
+		}
+	}
 }

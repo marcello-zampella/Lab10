@@ -43,6 +43,7 @@ public class PortoController {
     	for(Author a: model.cercaCoautori(partenza)) {
     		this.txtResult.appendText(a+"\n");
     	}
+    	this.boxSecondo.getItems().clear();
     	ArrayList temp=model.autoriNonCollegati();
     	Collections.sort(temp, new ComparatorAutore());
     	this.boxSecondo.getItems().addAll(temp);

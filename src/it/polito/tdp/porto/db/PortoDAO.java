@@ -153,4 +153,58 @@ public class PortoDAO {
 			throw new RuntimeException("Errore Db");
 		}
 	}
+
+	public ArrayList<Paper> getAllPaper() {
+
+		final String sql = "SELECT * " + 
+				"FROM paper ";
+
+		try {
+			Connection conn = DBConnect.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			
+			ResultSet rs = st.executeQuery();
+			ArrayList<Paper> result= new ArrayList<Paper>();
+			while (rs.next()) {
+				
+				Paper paper = new Paper(rs.getInt("eprintid"), rs.getString("title"), rs.getString("issn"),
+						rs.getString("publication"), rs.getString("type"), rs.getString("types"));
+				result.add(paper);				
+			}
+			
+			conn.close();
+
+			return result;
+
+		} catch (SQLException e) {
+			// e.printStackTrace();
+			throw new RuntimeException("Errore Db");
+		}
+	}
+
+	public ArrayList<Integer> getAllPaperByAuthor(Author a) {
+		
+				final String sql = "SELECT c.eprintid " + 
+						"FROM creator c " + 
+						"WHERE c.authorid=? ";
+
+				try {
+					Connection conn = DBConnect.getConnection();
+					PreparedStatement st = conn.prepareStatement(sql);
+					st.setInt(1, a.getId());
+					ResultSet rs = st.executeQuery();
+					ArrayList<Integer> result= new ArrayList<Integer>();
+					while (rs.next()) {
+						result.add(rs.getInt("c.eprintid"));			
+					}
+					conn.close();
+					return result;
+
+				} catch (SQLException e) {
+					// e.printStackTrace();
+					throw new RuntimeException("Errore Db");
+				}
+			
+		
+	}
 }

@@ -1,17 +1,34 @@
 package it.polito.tdp.porto.model;
 
+import java.util.ArrayList;
+
 public class Author {
 
 	private int id;
 	private String lastname;
 	private String firstname;
-		
+	private ArrayList<Paper> papers;
 	public Author(int id, String lastname, String firstname) {
 		super();
+		papers= new ArrayList<Paper>();
 		this.id = id;
 		this.lastname = lastname;
 		this.firstname = firstname;
 	}
+	
+	
+
+	public ArrayList<Paper> getPapers() {
+		return papers;
+	}
+
+	public boolean contieneArticolo (Paper p) {
+		if(this.papers.contains(p))
+			return true;
+		else
+			return false;
+	}
+
 
 	public int getId() {
 		return id;
@@ -67,6 +84,11 @@ public class Author {
 		if (id != other.id)
 			return false;
 		return true;
+	}
+
+	public void aggiungiPaper(Paper p) {
+		papers.add(p);
+		
 	}
 
 	
