@@ -45,7 +45,7 @@ public class PortoDAO {
 	
 	public HashSet<Author> getAllAutori() {
 
-		final String sql = "SELECT * FROM author ";
+		final String sql = "SELECT * FROM author ORDER BY lastname, firstname ";
 
 		try {
 			Connection conn = DBConnect.getConnection();
@@ -121,6 +121,32 @@ public class PortoDAO {
 			conn.close();
 
 			return result;
+
+		} catch (SQLException e) {
+			 e.printStackTrace();
+			throw new RuntimeException("Errore Db");
+		}
+	}
+	
+	public Paper getPaperComune(Author a1, Author a2) {
+
+		final String sql = "SELECT c.eprintid, title, issn, publication, TYPE, types " + 
+				"FROM creator c, creator c2, paper p " + 
+				"WHERE c.eprintid=c2.eprintid and c.authorid=? AND c2.authorid=? AND p.eprintid=c.eprintid ";
+
+		try {
+			Connection conn = DBConnect.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1, a1.getId());
+			st.setInt(2, a2.getId());
+			ResultSet rs = st.executeQuery();
+			
+			rs.next();
+				Paper paper = new Paper(rs.getInt("eprintid"), rs.getString("title"), rs.getString("issn"),
+						rs.getString("publication"), rs.getString("type"), rs.getString("types"));
+			conn.close();
+
+			return paper;
 
 		} catch (SQLException e) {
 			 e.printStackTrace();

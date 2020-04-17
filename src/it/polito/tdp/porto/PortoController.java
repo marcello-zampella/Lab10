@@ -2,10 +2,15 @@ package it.polito.tdp.porto;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
+
+import com.mysql.cj.x.protobuf.MysqlxCrud.Collection;
 
 import it.polito.tdp.porto.model.Author;
 import it.polito.tdp.porto.model.Model;
+import it.polito.tdp.porto.model.Paper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -23,7 +28,7 @@ public class PortoController {
     private ComboBox<Author> boxPrimo;
 
     @FXML
-    private ComboBox<?> boxSecondo;
+    private ComboBox<Author> boxSecondo;
 
     @FXML
     private TextArea txtResult;
@@ -32,14 +37,26 @@ public class PortoController {
 
     @FXML
     void handleCoautori(ActionEvent event) {
-    	for(Author a: model.cercaCoautori(this.boxPrimo.getValue())) {
-    		this.txtResult.appendText(a.getFirstname()+" "+a.getId()+"\n");
+    	Author partenza=this.boxPrimo.getValue();
+    	this.txtResult.clear();
+    	this.txtResult.appendText("Lista dei coautori di "+partenza+"\n");
+    	for(Author a: model.cercaCoautori(partenza)) {
+    		this.txtResult.appendText(a+"\n");
     	}
+    	ArrayList temp=model.autoriNonCollegati();
+    	Collections.sort(temp, new ComparatorAutore());
+    	this.boxSecondo.getItems().addAll(temp);
     }
 
     @FXML
     void handleSequenza(ActionEvent event) {
-
+    	Author partenza=this.boxPrimo.getValue();
+    	Author arrivo=this.boxSecondo.getValue();
+    	ArrayList<Paper> cammino=this.model.getCammino(partenza,arrivo);
+    	this.txtResult.appendText("\nlista degli articoli tra "+partenza+" e "+arrivo+"\n");
+    	for(Paper a: cammino) {
+    		this.txtResult.appendText(a+"\n");
+    	}
     }
 
     @FXML
@@ -54,6 +71,7 @@ public class PortoController {
 		this.model=model;
 		model.creaGrafo();
 		ArrayList<Author> temp= new ArrayList<Author>(model.getAutori());
+		Collections.sort(temp, new ComparatorAutore());
 		this.boxPrimo.getItems().addAll(temp);
 	}
 }
