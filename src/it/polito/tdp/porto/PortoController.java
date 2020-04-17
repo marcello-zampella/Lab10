@@ -53,6 +53,10 @@ public class PortoController {
     	Author partenza=this.boxPrimo.getValue();
     	Author arrivo=this.boxSecondo.getValue();
     	ArrayList<Paper> cammino=this.model.getCammino(partenza,arrivo);
+    	if(cammino==null) {
+    		this.txtResult.appendText("\nNon esiste nessun cammino tra "+partenza+" e "+arrivo+"\n");
+    		return;
+    	}
     	this.txtResult.appendText("\nlista degli articoli tra "+partenza+" e "+arrivo+"\n");
     	for(Paper a: cammino) {
     		this.txtResult.appendText(a+"\n");

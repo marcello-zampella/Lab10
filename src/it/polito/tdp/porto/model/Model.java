@@ -58,8 +58,10 @@ public class Model {
 		PortoDAO dao= new PortoDAO();
 		DijkstraShortestPath<Author, DefaultEdge> dijkstra = new DijkstraShortestPath<Author, DefaultEdge>(this.grafo);
 		GraphPath<Author, DefaultEdge> path= dijkstra.getPath(partenza,arrivo);
+		if(path==null)
+			return null;
 		LinkedList<Author> cammino=new LinkedList<Author>(path.getVertexList());
-		System.out.println(cammino);
+		//System.out.println(cammino);
 		ArrayList<Paper> articoli=new ArrayList<Paper>();
 		for(int i=0;i<cammino.size()-1;i++) {
 			articoli.add(dao.getPaperComune(cammino.get(i), cammino.get(i+1)));
