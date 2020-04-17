@@ -43,6 +43,7 @@ public class PortoController {
     	for(Author a: model.cercaCoautori(partenza)) {
     		this.txtResult.appendText(a+"\n");
     	}
+    	this.boxSecondo.getItems().clear();
     	ArrayList temp=model.autoriNonCollegati();
     	Collections.sort(temp, new ComparatorAutore());
     	this.boxSecondo.getItems().addAll(temp);
@@ -53,6 +54,10 @@ public class PortoController {
     	Author partenza=this.boxPrimo.getValue();
     	Author arrivo=this.boxSecondo.getValue();
     	ArrayList<Paper> cammino=this.model.getCammino(partenza,arrivo);
+    	if(cammino==null) {
+        	this.txtResult.appendText("\nCammino inesistente tra "+partenza+" e "+arrivo+"\n");
+        	return;
+    	}
     	this.txtResult.appendText("\nlista degli articoli tra "+partenza+" e "+arrivo+"\n");
     	for(Paper a: cammino) {
     		this.txtResult.appendText(a+"\n");

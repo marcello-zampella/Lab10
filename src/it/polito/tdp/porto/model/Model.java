@@ -32,7 +32,11 @@ public class Model {
 		this.grafo= new SimpleGraph<Author, DefaultEdgeMigliorato>(DefaultEdgeMigliorato.class);
 		Graphs.addAllVertices(grafo, idMap.values());
 		for(CoAutoraggio c: dao.getAutoraggio()) {
-			grafo.addEdge(idMap.get(c.getAutore1()),idMap.get(c.getAutore2()));
+			Author a1=idMap.get(c.getAutore1());
+			Author a2=idMap.get(c.getAutore2());
+			DefaultEdgeMigliorato arco=grafo.addEdge(a1,a2);
+			if(arco!=null)
+				arco.setPaperComune(dao.getPaperComune(a1, a2));
 	}
 	}
 	
@@ -55,14 +59,14 @@ public class Model {
 	}
 
 	public ArrayList<Paper> getCammino(Author partenza, Author arrivo) {
-		PortoDAO dao= new PortoDAO();
-		DijkstraShortestPath<Author, DefaultEdge> dijkstra = new DijkstraShortestPath<Author, DefaultEdge>(this.grafo);
-		GraphPath<Author, DefaultEdge> path= dijkstra.getPath(partenza,arrivo);
+		DijkstraShortestPath<Author, DefaultEdgeMigliorato> dijkstra = new DijkstraShortestPath<Author, DefaultEdgeMigliorato>(this.grafo);
+		GraphPath<Author, DefaultEdgeMigliorato> path= dijkstra.getPath(partenza,arrivo);
+		if(path==null)
+			return null;
 		LinkedList<Author> cammino=new LinkedList<Author>(path.getVertexList());
-		System.out.println(cammino);
 		ArrayList<Paper> articoli=new ArrayList<Paper>();
-		for(int i=0;i<cammino.size()-1;i++) {
-			articoli.add(dao.getPaperComune(cammino.get(i), cammino.get(i+1)));
+		for(DefaultEdgeMigliorato e: path.getEdgeList()) {
+			articoli.add(e.getPaperComune());
 		}
 		return articoli;
 	}
