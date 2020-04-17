@@ -18,7 +18,7 @@ import org.jgrapht.graph.SimpleGraph;
 import it.polito.tdp.porto.db.PortoDAO;
 
 public class Model {
-	private Graph<Author, DefaultEdge> grafo;
+	private Graph<Author, DefaultEdgeMigliorato> grafo;
 	private List<Author> coautori;
 	HashMap<Integer,Author> idMap;
 	HashMap<Integer,Author> mappaNonCollegati;
@@ -29,7 +29,7 @@ public class Model {
 		for(Author a: dao.getAllAutori()) {
 			idMap.put(a.getId(), a);
 		}
-		this.grafo= new SimpleGraph<Author, DefaultEdge>(DefaultEdge.class);
+		this.grafo= new SimpleGraph<Author, DefaultEdgeMigliorato>(DefaultEdgeMigliorato.class);
 		Graphs.addAllVertices(grafo, idMap.values());
 		for(CoAutoraggio c: dao.getAutoraggio()) {
 			grafo.addEdge(idMap.get(c.getAutore1()),idMap.get(c.getAutore2()));
